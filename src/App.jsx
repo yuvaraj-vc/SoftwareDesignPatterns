@@ -7,7 +7,8 @@ import Home from './components/Home'
 import HomeLayout from './layout/HomeLayout'
 import Ripple from './components/magicui/ripple'
 import BlurFade from './components/magicui/blur-fade'
-import Dashboard from './components/Dashboard'
+import Dashboard from './components/Admin/Dashboard'
+import AdminLayout from './layout/AdminLayout'
 
 
 
@@ -26,7 +27,13 @@ const App = () => {
                         <Route path='/login' element={<Login />} />
                         <Route path='/signup' element={<Signup />} />
                     </Route>
-                    <Route path="/dashboard" element={<Dashboard/>}/>
+     <Route element={<AdminLayout />}>
+
+                        
+                        <Route path="/dashboard" element={<Dashboard/>}/>
+                    </Route>
+     
+                    
 
      </Routes>
     
