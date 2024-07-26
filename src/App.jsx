@@ -9,6 +9,12 @@ import Ripple from './components/magicui/ripple'
 import BlurFade from './components/magicui/blur-fade'
 import Dashboard from './components/Admin/Dashboard'
 import AdminLayout from './layout/AdminLayout'
+import AdminUsers from './components/Admin/AdminUsers'
+import UserLayout from './layout/UserLayout'
+import UserDashboard from './components/Users/UserDashboard'
+import UserSub from './components/Users/UserSub'
+import UserClass from './components/Users/UserClass'
+import Sub from './components/Admin/Sub'
 
 
 
@@ -31,6 +37,15 @@ const App = () => {
 
                         
                         <Route path="/dashboard" element={<Dashboard/>}/>
+                        <Route path="/user" element={<AdminUsers/>}/>
+                        <Route path="/adsub" element={<Sub/>}/>
+                    </Route>
+     <Route element={<UserLayout />}>
+
+                        
+                        <Route path="/userdashboard" element={<UserDashboard/>}/>
+                        <Route path="/sub" element={<UserSub/>}/>
+                        <Route path="/class" element={<UserClass/>}/>
                     </Route>
      
                     

@@ -53,6 +53,7 @@ const Home = () => {
     body,
   }) => {
     return (
+     
       <figure
         className={cn(
           "relative w-64 cursor-pointer overflow-hidden rounded-xl border p-4",
@@ -81,6 +82,14 @@ const Home = () => {
       <BlurFade  delay={0.25 } inView>
       <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden rounded-lg  bg-inherit ">
       <Marquee pauseOnHover className="[--duration:20s]">
+      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+      "Effortlessly Create and Customize Your Perfect Schedule with Our Timetable Generator"
+    </h1>
+    </Marquee>
+    <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+      Testimonial
+    </h2>
+    <Marquee pauseOnHover className="[--duration:20s]">
         {firstRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}

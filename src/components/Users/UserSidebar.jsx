@@ -1,26 +1,26 @@
 import { LayoutDashboard, User, LibraryBig, LogOut  } from 'lucide-react'
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
-const Sidebar = () => {
+const UserSidebar = () => {
     const AdminLinks=[
         {
             title:'Dashboard',
-            link:'/dashboard',
+            link:'/userdashboard',
             icon:LayoutDashboard
         },
         {
-            title:'Teachers',
-            link:'/user',
+            title:'Subjects',
+            link:'/sub',
             icon:User
         },
         {
-            title:'Subjects',
-            link:'/adsub',
+            title:'Classes',
+            link:'/class',
             icon:LibraryBig 
         },
     ]
     return (
-        <div className='h-screen w-1/6 flex  justify-center items-center flex-col bg-secondary pt-24 '>
+        <div className='h-screen w-1/6 flex  justify-center items-center flex-col bg-secondary opacity-70 pt-10 shadow-sm shadow-primary '>
             <div className='h-5/6 w-full flex flex-col justify-start items-center gap-4'>
             {
           AdminLinks.map((links, index) => (
@@ -49,4 +49,4 @@ const Sidebar = () => {
     )
 }
 
-export default Sidebar
+export default UserSidebar

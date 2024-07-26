@@ -16,14 +16,19 @@ const Login = () => {
         e.preventDefault();
         if (!email || !password) {
             setError('Please fill in all fields.');
-        } else if (email !== 'user@gmail.com' || password !== '123') {
-            setError('Invalid email or password.');
+        } else if (email === 'admin@gmail.com' && password === '12345') {
+            setError('');
+            // Proceed with login
+            console.log('Logged in successfully');
+            navigate('/dashboard');
+        } else if (email === 'user@gmail.com' && password === '123') {
+            setError('');
+            // Proceed with login
+            console.log('Logged in successfully');
+            navigate('/userdashboard');
         } else {
+            setError('Invalid email or password.');
             
-                setError('');
-                // Proceed with login
-                console.log('Logged in successfully');
-                navigate('/dashboard');
            
         }
     };
