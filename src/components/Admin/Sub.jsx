@@ -1,17 +1,17 @@
-import React,{ useState }  from 'react'
+import React, { useState } from 'react';
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-  import { Button } from "@/components/ui/button"
-  import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -21,151 +21,201 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-  import { Card,  CardDescription,  CardHeader, CardTitle } from '@/components/ui/card';
-import BlurFade from '../magicui/blur-fade'
+} from "@/components/ui/sheet";
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import BlurFade from '../magicui/blur-fade';
+import { Edit, Trash } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Sub = () => {
-  const [searchQuery, setSearchQuery] = useState('')
-    const invoices = [
-        {
-          invoice: "INV001",
-          paymentStatus: "Paid",
-          totalAmount: "$250.00",
-          paymentMethod: "Credit Card",
-        },
-        {
-          invoice: "INV002",
-          paymentStatus: "Pending",
-          totalAmount: "$150.00",
-          paymentMethod: "PayPal",
-        },
-        {
-          invoice: "INV003",
-          paymentStatus: "Unpaid",
-          totalAmount: "$350.00",
-          paymentMethod: "Bank Transfer",
-        },
-        {
-          invoice: "INV004",
-          paymentStatus: "Paid",
-          totalAmount: "$450.00",
-          paymentMethod: "Credit Card",
-        },
-        {
-          invoice: "INV005",
-          paymentStatus: "Paid",
-          totalAmount: "$550.00",
-          paymentMethod: "PayPal",
-        },
-        {
-          invoice: "INV006",
-          paymentStatus: "Pending",
-          totalAmount: "$200.00",
-          paymentMethod: "Bank Transfer",
-        },
-        {
-          invoice: "INV007",
-          paymentStatus: "Unpaid",
-          totalAmount: "$300.00",
-          paymentMethod: "Credit Card",
-        },
-      ]
+  const [searchQuery, setSearchQuery] = useState('');
+  const [courses, setCourses] = useState([
+    { courseId: "CS101", courseTitle: "Introduction to Computer Science", eligibleStaffs: ["Spider-Man", "Iron Man"], credit: 3 },
+    { courseId: "PHY101", courseTitle: "Physics I", eligibleStaffs: ["Batman", "Superman"], credit: 4 },
+    { courseId: "HIS101", courseTitle: "World History", eligibleStaffs: ["Mickey Mouse"], credit: 2 },
+    { courseId: "BIO101", courseTitle: "Biology I", eligibleStaffs: ["Superman"], credit: 3 },
+    { courseId: "ENG101", courseTitle: "Engineering Basics", eligibleStaffs: ["Iron Man"], credit: 4 },
+    { courseId: "MYS101", courseTitle: "Mystery Solving", eligibleStaffs: ["Scooby-Doo"], credit: 2 },
+  ]);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [newCourse, setNewCourse] = useState({ courseId: '', courseTitle: '', eligibleStaffs: '', credit: '' });
+  const [isEditing, setIsEditing] = useState(false);
 
-      const filteredInvoices = invoices.filter((invoice) =>
-        invoice.invoice.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.paymentStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.totalAmount.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+  const handleDelete = (courseId) => {
+    if (window.confirm('Are you sure you want to delete this course?')) {
+      setCourses(courses.filter(course => course.courseId !== courseId));
+      toast.success('Course deleted successfully!',{theme:'dark'});
+    }
+  };
+
+  const handleEdit = (course) => {
+    setEditingCourse(course);
+    setIsEditing(true);
+    setNewCourse(course); // Populate form with the course details
+  };
+
+  const handleAdd = () => {
+    setEditingCourse(null);
+    setIsEditing(false);
+    setNewCourse({ courseId: '', courseTitle: '', eligibleStaffs: '', credit: '' });
+  };
+
+  const handleSaveChanges = () => {
+    if (!newCourse.courseId || !newCourse.courseTitle || !newCourse.credit) {
+      toast.error('Please fill all required fields.',{theme:'dark'});
+      return;
+    }
+
+    if (isEditing) {
+      setCourses(courses.map(course => (course.courseId === editingCourse.courseId ? newCourse : course)));
+      toast.success('Course edited successfully!',{theme:'dark'});
+    } else {
+      setCourses([...courses, { ...newCourse, eligibleStaffs: newCourse.eligibleStaffs.split(',').map(s => s.trim()) }]);
+      toast.success('Course added successfully!',{theme:'dark'});
+    }
+    setEditingCourse(null);
+    setIsEditing(false);
+    setNewCourse({ courseId: '', courseTitle: '', eligibleStaffs: '', credit: '' });
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setNewCourse({ ...newCourse, [id]: value });
+  };
+
+  const filteredCourses = courses.filter((course) =>
+    course.courseId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.courseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.eligibleStaffs.join(', ').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.credit.toString().toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    
-             <div className='m-1 p-4 h-full w-full'> 
-            <BlurFade delay={0.25} inView>
-            <Card className=' bg-opacity-90 backdrop-blur-3xl h-full w-full justify-start flex flex-col items-start'>
-        <CardHeader className='w-full flex flex-row justify-between items-center border'>
-            <CardTitle className=''>Users</CardTitle>
-            
+    <div className='m-1 p-4 h-full w-full'>
+      <ToastContainer />
+      <BlurFade delay={0.25} inView>
+        <Card className='overflow-y-auto bg-opacity-90 backdrop-blur-3xl h-full w-full justify-start flex flex-col items-start'>
+          <CardHeader className='w-full flex flex-row justify-between items-center border'>
+            <CardTitle>Courses</CardTitle>
             <div className='flex flex-row gap-2'>
-            <Input 
-              type='text' 
-              placeholder='Search...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-64'
-            />
-            <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline">ADD</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you're done.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div>
-        </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-      
-    </Sheet>
-            
-
+              <Input
+                type='text'
+                placeholder='Search...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='w-64'
+              />
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" onClick={handleAdd}>ADD</Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Add Course</SheetTitle>
+                    <SheetDescription>Add a new course here. Click save when you're done.</SheetDescription>
+                  </SheetHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="courseId" className="text-right">Course ID</Label>
+                      <Input id="courseId" value={newCourse.courseId} onChange={handleInputChange} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="courseTitle" className="text-right">Course Title</Label>
+                      <Input id="courseTitle" value={newCourse.courseTitle} onChange={handleInputChange} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="eligibleStaffs" className="text-right">Eligible Staffs</Label>
+                      <Input id="eligibleStaffs" value={newCourse.eligibleStaffs} onChange={handleInputChange} className="col-span-3" placeholder="Separate names with commas" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="credit" className="text-right">Credit</Label>
+                      <Input id="credit" value={newCourse.credit} onChange={handleInputChange} className="col-span-3" />
+                    </div>
+                  </div>
+                  <SheetFooter>
+                    <SheetClose asChild>
+                      <Button type="submit" onClick={handleSaveChanges}>Save changes</Button>
+                    </SheetClose>
+                  </SheetFooter>
+                </SheetContent>
+              </Sheet>
             </div>
-        </CardHeader>
-      <Table>
-      
-      <TableCaption>A list of your recent invoices.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredInvoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
-      
-    </Table>
-    </Card>
-    </BlurFade>
-    </div> 
-    
+          </CardHeader>
+          <div className="overflow-y-auto h-full w-full"> {/* Enable scroll */}
+            <Table>
+              <TableCaption>A list of your recent courses.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Course ID</TableHead>
+                  <TableHead>Course Title</TableHead>
+                  <TableHead>Eligible Staffs</TableHead>
+                  <TableHead>Credit</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCourses.map((course) => (
+                  <TableRow key={course.courseId}>
+                    <TableCell className="font-medium">{course.courseId}</TableCell>
+                    <TableCell>{course.courseTitle}</TableCell>
+                    <TableCell>{course.eligibleStaffs.join(', ')}</TableCell>
+                    <TableCell>{course.credit}</TableCell>
+                    <TableCell className="text-right">
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button variant="outline" className="mr-2" onClick={() => handleEdit(course)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                          <SheetHeader>
+                            <SheetTitle>Edit Course</SheetTitle>
+                            <SheetDescription>Edit the course details here. Click save when you're done.</SheetDescription>
+                          </SheetHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="courseId" className="text-right">Course ID</Label>
+                              <Input id="courseId" value={newCourse.courseId} onChange={handleInputChange} className="col-span-3" />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="courseTitle" className="text-right">Course Title</Label>
+                              <Input id="courseTitle" value={newCourse.courseTitle} onChange={handleInputChange} className="col-span-3" />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="eligibleStaffs" className="text-right">Eligible Staffs</Label>
+                              <Input id="eligibleStaffs" value={newCourse.eligibleStaffs} onChange={handleInputChange} className="col-span-3" placeholder="Separate names with commas" />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="credit" className="text-right">Credit</Label>
+                              <Input id="credit" value={newCourse.credit} onChange={handleInputChange} className="col-span-3" />
+                            </div>
+                          </div>
+                          <SheetFooter>
+                            <SheetClose asChild>
+                              <Button type="submit" onClick={handleSaveChanges}>Save changes</Button>
+                            </SheetClose>
+                          </SheetFooter>
+                        </SheetContent>
+                      </Sheet>
+                      <Button variant="outline" onClick={() => handleDelete(course.courseId)}>
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={5}>Total Courses: {courses.length}</TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </div>
+        </Card>
+      </BlurFade>
+    </div>
+  );
+};
 
-  )
-}
-
-export default Sub
+export default Sub;

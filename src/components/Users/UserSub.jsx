@@ -1,17 +1,17 @@
-import React,{ useState }  from 'react'
+import React, { useState } from 'react';
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-  import { Button } from "@/components/ui/button"
-  import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -21,140 +21,201 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-  import { Card,  CardDescription,  CardHeader, CardTitle } from '@/components/ui/card';
-import BlurFade from '../magicui/blur-fade'
+} from "@/components/ui/sheet";
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import BlurFade from '../magicui/blur-fade';
+import { Edit, Trash, Send, Check } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserSub = () => {
-  const [searchQuery, setSearchQuery] = useState('')
-    const invoices = [
-        {
-          invoice: "INV001",
-          paymentStatus: "Paid",
-          totalAmount: "$250.00",
-          paymentMethod: "Credit Card",
-        },
-        {
-          invoice: "INV002",
-          paymentStatus: "Pending",
-          totalAmount: "$150.00",
-          paymentMethod: "PayPal",
-        },
-        {
-          invoice: "INV003",
-          paymentStatus: "Unpaid",
-          totalAmount: "$350.00",
-          paymentMethod: "Bank Transfer",
-        },
-        {
-          invoice: "INV004",
-          paymentStatus: "Paid",
-          totalAmount: "$450.00",
-          paymentMethod: "Credit Card",
-        },
-        {
-          invoice: "INV005",
-          paymentStatus: "Paid",
-          totalAmount: "$550.00",
-          paymentMethod: "PayPal",
-        },
-        
-      ]
+  const [searchQuery, setSearchQuery] = useState('');
+  const [requests, setRequests] = useState([
+    { requestNumber: "REQ001", type: "Query" },
+    { requestNumber: "REQ002", type: "Leave" },
+    { requestNumber: "REQ003", type: "Others" },
+    { requestNumber: "REQ004", type: "Query" },
+    { requestNumber: "REQ005", type: "Leave" },
+    { requestNumber: "REQ006", type: "Others" },
+    { requestNumber: "REQ007", type: "Query" },
+  ]);
+  const [editingRequest, setEditingRequest] = useState(null);
+  const [newRequest, setNewRequest] = useState({ requestNumber: '', type: '' });
+  const [isEditing, setIsEditing] = useState(false);
 
-      const filteredInvoices = invoices.filter((invoice) =>
-        invoice.invoice.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.paymentStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.totalAmount.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+  const handleDelete = (requestNumber) => {
+    if (window.confirm('Are you sure you want to delete this request?')) {
+      setRequests(requests.filter(request => request.requestNumber !== requestNumber));
+      toast.success('Request deleted successfully!',{theme:'dark'});
+    }
+  };
+
+  const handleEdit = (request) => {
+    setEditingRequest(request);
+    setIsEditing(true);
+    setNewRequest(request); // Populate form with the request details
+  };
+
+  const handleAdd = () => {
+    setEditingRequest(null);
+    setIsEditing(false);
+    setNewRequest({ requestNumber: '', type: '' });
+  };
+
+  const handleSaveChanges = () => {
+    if (!newRequest.requestNumber || !newRequest.type) {
+      toast.error('Please fill all required fields.',{theme:'dark'});
+      return;
+    }
+    if (isEditing) {
+      setRequests(requests.map(request => (request.requestNumber === editingRequest.requestNumber ? newRequest : request)));
+      toast.success('Request edited successfully!',{theme:'dark'});
+    } else {
+      setRequests([...requests, newRequest]);
+      toast.success('Request created successfully!',{theme:'dark'});
+    }
+    setEditingRequest(null);
+    setIsEditing(false);
+    setNewRequest({ requestNumber: '', type: '' });
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setNewRequest({ ...newRequest, [id]: value });
+  };
+
+  const handleSendRequest = (requestNumber) => {
+    if (window.confirm('Are you sure you want to send this request?')){
+    toast.success('Request sent successfully!',{theme:'dark'});
+    setRequests(requests.map(request =>
+      request.requestNumber === requestNumber
+        ? { ...request, sent: true }
+        : request
+    ));
+  }
+  };
+
+  const filteredRequests = requests.filter((request) =>
+    request.requestNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    request.type.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    
-             <div className='m-1 p-4 h-full w-full'> 
-             <BlurFade delay={0.25} inView>
-            <Card className=' bg-opacity-90 backdrop-blur-3xl h-full w-full justify-start flex flex-col items-start'>
-        <CardHeader className='w-full flex flex-row justify-between items-center border'>
-            <CardTitle className=''>Users</CardTitle>
-            
+    <div className='m-1 p-4 h-full w-full'>
+      <ToastContainer/>
+      <BlurFade delay={0.25} inView>
+        <Card className=' bg-opacity-90 backdrop-blur-3xl h-full w-full justify-start flex flex-col items-start'>
+          <CardHeader className='w-full flex flex-row justify-between items-center border'>
+            <CardTitle>Requests</CardTitle>
             <div className='flex flex-row gap-2'>
-            <Input 
-              type='text' 
-              placeholder='Search...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-64'
-            />
-            <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline">ADD</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you're done.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div>
-        </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-      
-    </Sheet>
-            
-
+              <Input
+                type='text'
+                placeholder='Search...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='w-64'
+              />
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" onClick={handleAdd}>ADD</Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Add Request</SheetTitle>
+                    <SheetDescription>Add a new request here. Click save when you're done.</SheetDescription>
+                  </SheetHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="requestNumber" className="text-right">Request Number</Label>
+                      <Input id="requestNumber" value={newRequest.requestNumber} onChange={handleInputChange} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="type" className="text-right">Type</Label>
+                      <Input id="type" value={newRequest.type} onChange={handleInputChange} className="col-span-3" />
+                    </div>
+                  </div>
+                  <SheetFooter>
+                    <SheetClose asChild>
+                      <Button type="submit" onClick={handleSaveChanges}>Save changes</Button>
+                    </SheetClose>
+                  </SheetFooter>
+                </SheetContent>
+              </Sheet>
             </div>
-        </CardHeader>
-      <Table>
-      
-      <TableCaption>A list of your recent invoices.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredInvoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
-      
-    </Table>
-    </Card>
-    </BlurFade>
-    </div> 
-    
-
-  )
+          </CardHeader>
+          <Table>
+            <TableCaption>A list of your recent requests.</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[150px]">Request Number</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRequests.map((request) => (
+                <TableRow key={request.requestNumber}>
+                  <TableCell className="font-medium">{request.requestNumber}</TableCell>
+                  <TableCell>{request.type}</TableCell>
+                  <TableCell className="text-right">
+                    {!request.sent ? (
+                      <>
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button variant="outline" className="mr-2" onClick={() => handleEdit(request)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent>
+                            <SheetHeader>
+                              <SheetTitle>Edit Request</SheetTitle>
+                              <SheetDescription>Edit the request details here. Click save when you're done.</SheetDescription>
+                            </SheetHeader>
+                            <div className="grid gap-4 py-4">
+                              <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="requestNumber" className="text-right">Request Number</Label>
+                                <Input id="requestNumber" value={newRequest.requestNumber} onChange={handleInputChange} className="col-span-3" />
+                              </div>
+                              <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="type" className="text-right">Type</Label>
+                                <Input id="type" value={newRequest.type} onChange={handleInputChange} className="col-span-3" />
+                              </div>
+                            </div>
+                            <SheetFooter>
+                              <SheetClose asChild>
+                                <Button type="submit" onClick={handleSaveChanges}>Save changes</Button>
+                              </SheetClose>
+                            </SheetFooter>
+                          </SheetContent>
+                        </Sheet>
+                        <Button variant="outline" className="mr-2" onClick={() => handleDelete(request.requestNumber)}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" onClick={() => handleSendRequest(request.requestNumber)}>
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-end gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span>Sent</span>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={3}>Total Requests</TableCell>
+                <TableCell className="text-right">{requests.length}</TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </Card>
+      </BlurFade>
+    </div>
+  );
 }
 
-export default UserSub
+export default UserSub;
