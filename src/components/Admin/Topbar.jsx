@@ -8,7 +8,7 @@ import {
 
 const Topbar = () => {
   return (
-    <div className='h-[8vh]  w-full  justify-center bg-secondary  items-center top-0 '>
+    <div className='h-[8vh]  w-[80vw] mt-[2vh] rounded-xl justify-center bg-secondary  items-center top-0 '>
       <div className='w-[90%] flex  justify-end items-end gap-4 pt-4'>
 
       <Avatar>

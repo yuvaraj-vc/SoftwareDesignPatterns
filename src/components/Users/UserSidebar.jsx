@@ -20,7 +20,7 @@ const UserSidebar = () => {
         },
     ]
     return (
-        <div className='h-screen w-1/6 flex  justify-center items-center flex-col bg-secondary pt-8 '>
+        <div className='h-[96vh] mt-[2vh] ml-[2vh] rounded-xl w-2/12 flex  justify-center items-center flex-col bg-secondary pt-8 '>
              <div className="w-full flex flex-col  mb-8 ">
         <div className="flex items-center gap-2 text-primary text-2xl font-bold ">
           <CalendarClock size={24} />
