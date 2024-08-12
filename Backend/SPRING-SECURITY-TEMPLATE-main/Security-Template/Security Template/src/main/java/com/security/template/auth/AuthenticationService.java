@@ -3,11 +3,15 @@ package com.security.template.auth;
 
 
 import com.security.template.config.JwtService;
+import com.security.template.enums.Role;
 import com.security.template.model.Token;
 import com.security.template.model.User;
 import com.security.template.repo.TokenRepo;
 import com.security.template.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,8 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
-
+public class AuthenticationService implements AuthService {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
@@ -25,7 +28,7 @@ public class AuthenticationService {
     private final TokenRepo tokenRepo;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user  = User.builder()
+        var user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -42,9 +45,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword()
-                )
-        );
+                        request.getPassword()));
         var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
@@ -78,5 +79,21 @@ public class AuthenticationService {
         revokeAllUserTokens(user);
     }
 
+    @Override
+    public String createAdmin() {
+        Optional<User> userExist = userRepo.findByEmail("admin@gmail.com");
+        if (userExist.isPresent()) {
+            return "User already exists with email id - admin@gmail.com";
+        }
+
+        var user = User.builder()
+                .name("Admin")
+                .email("admin@gmail.com")
+                .password(passwordEncoder.encode("1811321"))
+                .role(Role.ADMIN)
+                .build();
+        userRepo.save(user);
+        return "Admin registered successfully.";
+    }
 
 }
